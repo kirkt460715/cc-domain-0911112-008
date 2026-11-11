@@ -29,6 +29,20 @@ def main(argv=None):
     ingest.add_argument("--partial", action="store_true")
     verify = commands.add_parser("verify")
     verify.add_argument("file")
+    harvest = commands.add_parser("harvest")
+    harvest.add_argument("source")
+    harvest.add_argument("run")
+    harvest.add_argument("endpoint")
+    harvest.add_argument("mode", choices=["full", "incremental"])
+    harvest.add_argument("--from", dest="from_day")
+    harvest.add_argument("--until", dest="until_day")
+    harvest.add_argument("--metadata-prefix", default="oai_dc")
+    harvest.add_argument("--max-restarts", type=int, default=3)
+    harvest.add_argument(
+        "--stage-only",
+        action="store_true",
+        help="只采集暂存，不形成来源快照或变更",
+    )
     args = parser.parse_args(argv)
     try:
         if args.command == "demo":
@@ -53,6 +67,21 @@ def main(argv=None):
                         args.expected_generation,
                         not args.partial,
                     )
+                elif args.command == "harvest":
+                    mesh.harvest.start(
+                        args.run,
+                        args.source,
+                        args.endpoint,
+                        args.mode,
+                        args.from_day,
+                        args.until_day,
+                        args.metadata_prefix,
+                        args.max_restarts,
+                    )
+                    staged = mesh.harvest.collect(args.run)
+                    result = {"run": staged}
+                    if not args.stage_only:
+                        result["applied"] = mesh.harvest.apply(args.run)
                 else:
                     result = mesh.dispatch(decode(read_local(args.request)))
         print(canonical({"ok": True, "result": result}))

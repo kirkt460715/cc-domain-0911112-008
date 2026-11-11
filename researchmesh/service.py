@@ -5,6 +5,7 @@ from .snapshots.catalogue import PublishedCatalogue
 from .normalization.dictionary import Dictionary
 from .normalization.text import Normalizer
 from .normalization.ingestion import Sources
+from .harvest import HarvestManager
 from .linkage.evidence import Evidence
 from .linkage.candidates import Candidates
 from .linkage.quality import Quality
@@ -26,6 +27,7 @@ class ResearchMesh:
         self.graph = DecisionGraph(self.store, self.sources, self.evidence)
         self.sources.on_change = self.graph.rebuild
         self.changes = ChangeFeed(self.store, self.sources)
+        self.harvest = HarvestManager(self.store, self.sources, self.changes)
         self.review = ReviewQueue(self.store, self.evidence, self.graph)
         self.masters = MasterRecords(
             self.store, self.sources, self.normalizer, self.graph
@@ -66,6 +68,20 @@ class ResearchMesh:
                     "reindex",
                     "history",
                     "parse",
+                ],
+            ),
+            (
+                "harvest",
+                self.harvest,
+                [
+                    "start",
+                    "collect",
+                    "get",
+                    "list_runs",
+                    "explain",
+                    "apply",
+                    "rebase",
+                    "watermark",
                 ],
             ),
             (
