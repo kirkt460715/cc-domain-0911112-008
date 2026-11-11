@@ -1,0 +1,48 @@
+{
+  "routes": [
+    {
+      "path": "/oai",
+      "responses": [
+        {
+          "body": "<OAI-PMH xmlns=\"http://www.openarchives.org/OAI/2.0/\"><ListRecords><record><header><identifier>oai:lab:1</identifier><datestamp>2026-11-10</datestamp></header><metadata><m:record xmlns:m=\"urn:researchmesh\"><m:title>材料显微图谱</m:title><m:institution>合成研究所</m:institution><m:kind>dataset</m:kind><m:year>2026</m:year></m:record></metadata></record><resumptionToken>next</resumptionToken></ListRecords></OAI-PMH>",
+          "headers": {
+            "Content-Type": "application/xml"
+          }
+        }
+      ],
+      "query": {
+        "verb": "ListRecords"
+      }
+    },
+    {
+      "path": "/oai",
+      "responses": [
+        {
+          "body": "<OAI-PMH xmlns=\"http://www.openarchives.org/OAI/2.0/\"><ListRecords><record><header status=\"deleted\"><identifier>oai:lab:2</identifier><datestamp>2026-11-10</datestamp></header></record><resumptionToken></resumptionToken></ListRecords></OAI-PMH>",
+          "headers": {
+            "Content-Type": "application/xml"
+          }
+        }
+      ],
+      "query": {
+        "verb": "ListRecords",
+        "resumptionToken": "next"
+      }
+    },
+    {
+      "path": "/oai",
+      "responses": [
+        {
+          "body": "<OAI-PMH xmlns=\"http://www.openarchives.org/OAI/2.0/\"><error code=\"badResumptionToken\">expired</error></OAI-PMH>",
+          "headers": {
+            "Content-Type": "application/xml"
+          }
+        }
+      ],
+      "query": {
+        "verb": "ListRecords",
+        "resumptionToken": "expired"
+      }
+    }
+  ]
+}
